@@ -35,14 +35,17 @@ print(point.negative_line_segment())
 import json
 
 class Model:
-    title = 'какой-то заголовок'
-    text = 'какой-то текст'
-    author = '123'
+
+    def __init__(self):
+        self.title = 'This is the title'
+        self.text = 'This is text'
+        self.author = 'The author\'s name will appear here'
 
     def save(self):
         with open('data.json', 'w') as f:
-            json.dump(dir(dict1), f)  #вообще не совсем понял как это сработало, если dict1 объявлен за пределами класса
+            json.dump(self.__dict__, f)
 
 dict1 = Model()
 dict1.save()
+
 
