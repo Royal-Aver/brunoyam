@@ -16,7 +16,7 @@ while i < len_list:
     list_daily_exchange_rates.append(float(list_table[i].text))
     i += 3
 
-amount_days = range(1, 131)
+amount_days = range(1, 131 - 1)
 
 plt.title('Dollar to ruble exchange rate')
 plt.xlabel('days')
