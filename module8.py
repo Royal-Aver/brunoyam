@@ -7,41 +7,50 @@ conn = sqlite3.connect('db1.sqlite')
 cursor = conn.cursor()
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS Students(id int PRIMARY KEY, name Varchar(32), surname Varchar(32),
-age int, city Varchar(32))''')
-cursor.execute('''CREATE TABLE IF NOT EXISTS Courses(id int PRIMARY KEY, name Varchar(32), time_start Varchar(32), '
-               'time_end Varchar(32))''')
-cursor.execute('''CREATE TABLE IF NOT EXISTS Student_courses(student_id INTEGER NOT NULL, course_id INTEGER NOT NULL,
-                FOREIGN KEY (student_id) REFERENCES Students (id)
-                FOREIGN KEY (course_id) REFERENCES Courses (id))''')
-
-# cursor.executemany('INSERT INTO Courses Values (?, ?, ?, ?)',
-#                    [(1, 'python', '21.07.21', '21.08.21'),
-#                     (2, 'java', '13.07.21', '16.08.21')])
-#
+                age int, city Varchar(32))''')
+conn.commit()
 # cursor.executemany('INSERT INTO Students Values (?, ?, ?, ?, ?)',
 #                    [(1, 'Max', 'Brooks', 24, 'Spb'),
 #                     (2, 'John', 'Stones', 15, 'Spb'),
-#                     (3, 'Andy', 'Wings', 45, 'Manhester'),
+#                     (3, 'Andy', 'Wings', 45, 'Manchester'),
 #                     (4, 'Kate', 'Brooks', 34, 'Spb')])
-#
+conn.commit()
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS Courses(id int PRIMARY KEY, name Varchar(32), time_start Varchar(32),
+               time_end Varchar(32))''')
+conn.commit()
+# cursor.executemany('INSERT INTO Courses Values (?, ?, ?, ?)',
+#                    [(1, 'python', '21.07.21', '21.08.21'),
+#                     (2, 'java', '13.07.21', '16.08.21')])
+conn.commit()
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS Student_courses(student_id int, course_id int,
+                FOREIGN KEY(student_id) REFERENCES Students(id),
+                FOREIGN KEY(course_id) REFERENCES Courses(id))''')
+conn.commit()
 # cursor.executemany('INSERT INTO Student_courses Values (?, ?)',
 #                    [(1, 1),
 #                     (2, 1),
 #                     (3, 1),
 #                     (4, 2)])
-
-age_more_30 = cursor.execute('SELECT name FROM Students WHERE age > 30').fetchall()
-students_take_courses_python = cursor.execute("""SELECT Students.surname
-                                                FROM Student_courses JOIN Students ON Student_courses.student_id = Students.id
-                                                 WHERE course_id=1""").fetchall()
-students_take_courses_python_and_SPB = cursor.execute("""SELECT Students.surname
-                                                    FROM Student_courses JOIN Students ON Student_courses.student_id = Students.id
-                                                     WHERE Students.city = 'Spb' AND course_id = 1""").fetchall()
-
-print(age_more_30)
-print(students_take_courses_python)
-print(students_take_courses_python_and_SPB)
 conn.commit()
+
+age_more_30 = cursor.execute('SELECT name, surname FROM Students WHERE age > 30')
+print(age_more_30.fetchall())
+
+students_take_courses_python = cursor.execute("""SELECT Students.name, Students.surname FROM
+                                                Students JOIN Student_courses ON
+                                                 Student_courses.student_id = Students.id JOIN Courses
+                                                  ON Student_courses.course_id = Courses.id
+                                                   WHERE Courses.name = 'python'""")
+print(students_take_courses_python.fetchall())
+
+students_take_courses_python_and_SPB = cursor.execute("""SELECT Students.name, Students.surname 
+                                                        FROM Students JOIN Student_courses ON
+                                                         Student_courses.student_id = Students.id JOIN Courses ON
+                                                          Student_courses.course_id = Courses.id
+                                                           WHERE Courses.name = 'python' & Students.city = 'Spb'""")
+print(students_take_courses_python_and_SPB.fetchall())
 
 conn.close()
 
